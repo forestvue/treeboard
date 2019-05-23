@@ -19,9 +19,11 @@ simple dashboard with login support
 
 ### Task 1. 상단 메뉴바 파어베이스 로그인 기능 구현
 
-- 구글 회원 가입
+- 구글 회원 가입 및 로그인
 
-- 읿반 회원 가입
+- 일반 회원 가입 및 로그인
+
+회원 가입, 로그인 폼에 다음과 같은 조건 적용 :
 
   1. 이메일 포맷이 맞는지 확인
   
@@ -38,7 +40,7 @@ simple dashboard with login support
 
 - 관리자 대시보드에서 클릭 이벤트를 통한 사용자 권한 승격(사용자 - 관리자)
   
-- 스크롤 발생 시 상단 메뉴바가 그대로 따라옴 (css 속성 중 1position: fixed` 부여)
+- 스크롤 발생 시 상단 메뉴바가 그대로 따라옴 (css 속성 중 `position: fixed` 부여)
   
 
 ### Task 3. 로딩화면 구현
