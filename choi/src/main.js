@@ -3,15 +3,12 @@
 import Vue from 'vue'
 import App from './App'
 import router from './router'
-import Firebase from 'firebase/app'
-import 'firebase/firestore'
+import './common/firebase'
 
 Vue.config.productionTip = false
-Vue.prototype.$db = Firebase.initializeApp({
-  apiKey: 'AIzaSyC_bQgvZYtcQjwmmXR2I1YfyZLM7P1t9tQ',
-  projectId: 'forestvue-8424e'
-}).firestore()
 /* eslint-disable no-new */
+Vue.prototype.$eventHub = new Vue()
+
 new Vue({
   el: '#app',
   router,

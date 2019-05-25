@@ -2,36 +2,48 @@
   <div class="nav">
     <ul>
       <li><router-link to="/">home</router-link></li>
-      <li><router-link to="/dashboard">Dashboard</router-link></li>
+      <li class="login"><a v-on:click="login()">login</a></li>
     </ul>
   </div>
 </template>
 
 <script>
 export default {
-  name: 'Nav'
+  name: 'Nav',
+  methods: {
+    login: function () {
+      this.$eventHub.$emit('openModal')
+    }
+  }
 }
 </script>
 
 <style scoped>
 .nav{
-  background-color: #7a0000;
+  background-color: #a52a2a;
   color: white;
 }
 .nav ul{
   list-style: none;
+  overflow: hidden;
+  margin: 0;
 }
 .nav ul li{
-  margin: 5px;
+  padding: 15px 30px 15px 30px;
   display: inline-block;
 }
 
 .nav ul li a{
+  display: block;
   color: white;
   text-decoration: none;
 }
-.nav ul li a.active{
-  color: red;
+
+.nav ul li.login{
+  float: right;
+}
+.nav ul li a{
+  display: block;
 }
 .nav ul li a:link{
   color: white;

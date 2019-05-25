@@ -48,7 +48,6 @@ export default {
         })
         Promise.all(collections).then(res => {
           resolve(res)
-
         })
       })
     },
