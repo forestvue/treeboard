@@ -47,4 +47,7 @@ simple dashboard with login support
 ### Task 3. 로딩화면 구현
 
 - 데이터가 완전히 로드될 때까지 보여주기
+## Todo(옵션)
 
+차트 라이브러리를 사용해서 데이터를 시각화
+Chart.js, D3.js 
