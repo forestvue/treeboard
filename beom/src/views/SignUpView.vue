@@ -1,6 +1,5 @@
 <template>
 <div>
-    dd
 <sign-up />
 </div>
     
