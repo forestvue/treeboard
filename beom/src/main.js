@@ -19,6 +19,7 @@ firebase.initializeApp(firebaseConfig);
 
 Vue.prototype.$db = firebase.firestore();
 Vue.prototype.$auth = firebase.auth();
+Vue.prototype.$googleProvider = new firebase.auth.GoogleAuthProvider();
 
 Vue.config.productionTip = false
 

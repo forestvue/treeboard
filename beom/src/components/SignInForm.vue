@@ -1,10 +1,26 @@
 <template>
-    
+    <div>
+        <form>
+            <input type="email" name="" id="">
+            <input type="password" name="" id="">
+            <button></button>
+        </form>
+        <button @click="googleSignIn">google Sign In</button>
+        <router-link to="/sign-up"></router-link>
+    </div>
 </template>
 
 <script>
 export default {
-
+    methods: {
+        googleSignIn() {
+            this.$auth.signInWithPopup(this.$googleProvider).then((result) => {
+                this.$router.replace('/')
+            }).catch((err) => {
+                console.log(err.message);
+            })
+        }
+    },
 }
 </script>
 
