@@ -15,7 +15,9 @@ export default {
     methods: {
         googleSignIn() {
             this.$auth.signInWithPopup(this.$googleProvider).then((result) => {
-                this.$router.replace('/')
+                console.log(this.$currentUser);console.log(this.$auth.currentUser);
+                
+                this.$router.replace('/dashboard')
             }).catch((err) => {
                 console.log(err.message);
             })

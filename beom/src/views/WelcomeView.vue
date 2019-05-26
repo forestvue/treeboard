@@ -1,6 +1,6 @@
 <template>
     <div>
-        {{this.$auth.currentUser}}
+        <h1>Welcome!</h1>
     </div>
 </template>
 

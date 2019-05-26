@@ -5,6 +5,8 @@ import App from './App'
 import router from './router'
 import firebase from 'firebase'
 
+let app = '';
+
 var firebaseConfig = {
   apiKey: "AIzaSyC_bQgvZYtcQjwmmXR2I1YfyZLM7P1t9tQ",
   authDomain: "forestvue-8424e.firebaseapp.com",
@@ -24,9 +26,21 @@ Vue.prototype.$googleProvider = new firebase.auth.GoogleAuthProvider();
 Vue.config.productionTip = false
 
 /* eslint-disable no-new */
-new Vue({
-  el: '#app',
-  router,
-  components: { App },
-  template: '<App/>'
+// new Vue({
+//   el: '#app',
+//   router,
+//   components: { App },
+//   template: '<App/>'
+// })
+
+firebase.auth().onAuthStateChanged(() => {
+  if(!app) {
+    app = new Vue({
+      el: '#app',
+      router,
+      components: { App },
+      template: '<App/>'
+    });
+    Vue.prototype.$currentUser = firebase.auth().currentUser;
+  }
 })
