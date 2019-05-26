@@ -22,8 +22,9 @@ export default {
           this.$db
             .collection("Users").doc(result.user.uid)
             .set({
-              name: result.user.displayName,
-              email: result.user.email
+              displayName: result.user.displayName,
+              email: result.user.email,
+              isAdmin: true
             })
             .then(() => {
               this.$router.replace("/dashboard");
