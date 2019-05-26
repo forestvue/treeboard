@@ -1,5 +1,4 @@
-import { auth } from 'firebase'
-
+import { auth } from './firebase.js'
 export const ApiService = {
   login (id, pw) {
 
@@ -13,7 +12,6 @@ export const ApiService = {
         console.log(res)
       })
       .catch(function (error) {
-        // Handle Errors here.
         console.log(error)
       })
   },

@@ -4,28 +4,7 @@
     <div class="main">
       <router-view></router-view>
     </div>
-    <!-- The Modal -->
-    <div v-bind:style="{display: modalStatus}" id="myModal" class="modal">
-      <!-- Modal content -->
-      <div class="modal-content">
-        <span class="close" v-on:click="closeModal">&times;</span>
-        <h2> 로그인 하기 </h2>
-        <div class="member-login">
-          <form>
-            <input type="text" placeholder="ID" autocomplete="email">
-            <input type="password" placeholder="Password" autocomplete="off">
-          </form>
-          <div>
-            <button class="sky login-button">Login</button>
-          </div>
-        </div>
-        <button>구글로 로그인하기</button>
-        <p>또는</p>
-
-        <p>회원가입 하기</p>
-      </div>
-
-    </div>
+    <Modal v-bind:modal-info="modalInfo"></Modal>
   </div>
 </template>
 
@@ -33,29 +12,42 @@
 
 import Nav from '@/components/Nav'
 import { ApiService } from './common/api.service'
+import Modal from './components/modal/Modal'
 export default {
   name: 'App',
-  components: { Nav },
+  components: { Modal, Nav },
   data () {
     return {
-      id: '',
-      pw: '',
-      modalStatus: 'none',
-      currentModal: 'login'
+      Authinfo: {
+        id: '',
+        pw: ''
+      },
+      modalInfo: {
+        modalStatus: false,
+        currentModal: 0
+      }
     }
   },
   mounted () {
     this.$eventHub.$on('openModal', this.openModal)
+    this.$eventHub.$on('closeModal', this.closeModal)
   },
   methods: {
+    goRegister: function () {
+
+    },
+    goLogin: function () {
+      this.openModal()
+    },
     signin: function () {
       ApiService.login()
     },
     closeModal: function () {
-      this.modalStatus = 'none'
+      this.modalInfo.modalStatus = false
     },
-    openModal: function () {
-      this.modalStatus = 'block'
+    openModal: function (id) {
+      this.modalInfo.currentModal = id
+      this.modalInfo.modalStatus = true
     }
   }
 }
@@ -78,13 +70,6 @@ export default {
     width: 50%;
     float: left;
   }
-  .member-login {
-
-  }
-  .member-login form, .member-login div{
-    display: inline-block;
-    vertical-align: middle;
-  }
   .sky{
     background-color: #6ffff7;
   }
@@ -99,7 +84,7 @@ export default {
   }
   /* The Modal (background) */
   .modal {
-    display: none; /* Hidden by default */
+    display: block; /* Hidden by default */
     position: fixed; /* Stay in place */
     z-index: 1; /* Sit on top */
     left: 0;

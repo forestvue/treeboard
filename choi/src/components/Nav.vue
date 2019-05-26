@@ -2,7 +2,7 @@
   <div class="nav">
     <ul>
       <li><router-link to="/">home</router-link></li>
-      <li class="login"><a v-on:click="login()">login</a></li>
+      <li class="login"><a v-on:click="doLogin">login</a></li>
     </ul>
   </div>
 </template>
@@ -11,8 +11,8 @@
 export default {
   name: 'Nav',
   methods: {
-    login: function () {
-      this.$eventHub.$emit('openModal')
+    doLogin: function () {
+      this.$eventHub.$emit('openModal', 0)
     }
   }
 }
@@ -41,6 +41,7 @@ export default {
 
 .nav ul li.login{
   float: right;
+  cursor: pointer;
 }
 .nav ul li a{
   display: block;
