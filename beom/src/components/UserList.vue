@@ -1,5 +1,8 @@
 <template>
   <div>
+    <div>
+      <md-progress-bar :class="{loading: isDataLoading}" md-mode="indeterminate"></md-progress-bar>
+    </div>
     <md-table
       v-model="userList"
       md-card
@@ -16,7 +19,8 @@
         <div class="md-toolbar-section-start">{{ getAlternateLabel(count) }}</div>
 
         <div class="md-toolbar-section-end">
-          <md-button @click="updatePermission(0)" class="md-icon-button"><md-progress-spinner
+          <md-button @click="updatePermission(0)" class="md-icon-button">
+            <md-progress-spinner
               class="spinner"
               :md-diameter="30"
               :md-stroke="3"
@@ -25,7 +29,8 @@
             ></md-progress-spinner>
             <md-icon :class="{loading: isLoading}">arrow_downward</md-icon>
           </md-button>
-          <md-button @click="updatePermission(1)" class="md-icon-button"><md-progress-spinner
+          <md-button @click="updatePermission(1)" class="md-icon-button">
+            <md-progress-spinner
               class="spinner"
               :md-diameter="30"
               :md-stroke="3"
@@ -34,7 +39,6 @@
             ></md-progress-spinner>
             <md-icon :class="{loading: isLoading}">arrow_upward</md-icon>
           </md-button>
-          
         </div>
       </md-table-toolbar>
 
@@ -52,7 +56,7 @@
     </md-table>
 
     <!-- <p>Selected:</p>
-    {{ selected }} -->
+    {{ selected }}-->
   </div>
 </template>
 
@@ -62,16 +66,20 @@ export default {
     return {
       userList: [],
       selected: [],
-      isLoading: false
+      isLoading: false,
+      isDataLoading: false
     };
   },
   created() {
     this.$db
       .collection("Users")
-    //   .where("isAdmin", "==", false)
-    .onSnapshot((querySnapshot) =>{
+      //   .where("isAdmin", "==", false)
+      .onSnapshot(querySnapshot => {
+
         this.userList = [];
         querySnapshot.forEach(doc => {
+                              this.isDataLoading = false;
+
           console.log(`${doc.id} => ${doc.data()}`);
           console.log(doc.data());
           const userData = {
@@ -82,12 +90,14 @@ export default {
           };
           this.userList.push(userData);
         });
-    })
+        this.isDataLoading = true;
+      });
     //   this.$db
-    //   .collection("Users")
-    //   .where("isAdmin", "==", false)
-    //   onSnapshot(querySnapshot => {
+    //   .collection("Users").get().then(querySnapshot => {
+    //     this.userList = [];
     //     querySnapshot.forEach(doc => {
+    //       this.isDataLoading = true;
+
     //       console.log(`${doc.id} => ${doc.data()}`);
     //       console.log(doc.data());
     //       const userData = {
@@ -98,6 +108,7 @@ export default {
     //       };
     //       this.userList.push(userData);
     //     });
+    //     this.isDataLoading = false;
     //   });
   },
   methods: {
@@ -116,10 +127,10 @@ export default {
     updatePermission(flag) {
       this.isLoading = true;
       var isAdmin = false;
-      if(flag == 0) {
-          isAdmin = false;
-      }else {
-          isAdmin = true;
+      if (flag == 0) {
+        isAdmin = false;
+      } else {
+        isAdmin = true;
       }
       this.selected.forEach(doc => {
         console.log(doc.uid);
@@ -127,7 +138,7 @@ export default {
           .collection(this.$rootCol)
           .doc(doc.uid)
           .update({
-              isAdmin: isAdmin
+            isAdmin: isAdmin
           })
           .then(() => {
             this.isLoading = false;

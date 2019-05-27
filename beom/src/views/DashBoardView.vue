@@ -4,7 +4,6 @@
       <user-data :user-data="this.$auth.currentUser"/>
     </div>
     <div v-else>
-      {{isAdmin}}
       <user-list/>
     </div>
   </div>
