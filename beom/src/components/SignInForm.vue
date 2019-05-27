@@ -1,9 +1,9 @@
 <template>
   <div>
     <form>
-      <input v-model="email" type="email" name id>
-      <input v-model="password" type="password" name id>
-      <button @click="emailSignIn(email, password)"></button>
+      <input v-model="email" type="email" name="email" id="email">
+      <input v-model="password" type="password" name="password" id="password">
+      <button @click="emailSignIn">Email Sign In</button>
     </form>
     <button @click="googleSignIn">google Sign In</button>
     <router-link to="/sign-up">sign up</router-link>
@@ -12,6 +12,12 @@
 
 <script>
 export default {
+    data() {
+        return {
+            email: "",
+            password: "",
+        }
+    },
   methods: {
     googleSignIn() {
       this.$auth
@@ -37,9 +43,9 @@ export default {
           console.log(err.message);
         });
     },
-    emailSignIn(email, password) {
+    emailSignIn() {
       this.$auth
-        .signInWithEmailAndPassword(email, password)
+        .signInWithEmailAndPassword(this.email, this.password)
         .then(result => {
           console.log(result);
           this.$router.replace("/dashboard");
