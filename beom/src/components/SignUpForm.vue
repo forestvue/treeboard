@@ -1,14 +1,62 @@
 <template>
-  <div>
+  <md-card class="sign-up-container">
     <form>
-      <input v-model="displayName" type="text">
-      <input v-model="email" type="email">
-      <pulse-loader :loading="isLoading"></pulse-loader>
-      <button @click="duplicateCheck" :class="{loading: isLoading}">중복확인</button>
-      <input v-model="password" type="password">
-      <button @click="signUp">회원가입</button>
+      <md-field>
+        <label>Name</label>
+        <md-input v-model="displayName" type="text"></md-input>
+        <span class="md-helper-text" v-if="isValidName">사용가능한 이름입니다.</span>
+      </md-field>
+      <div class="sign-up-input-container">
+        <md-field>
+          <label>Email</label>
+          <md-input v-model="email" type="email"></md-input>
+          <span
+            class="md-helper-text"
+            v-if="isValidEmail && !isDuplicate && isConfirmDuplicate"
+          >사용가능한 이메일입니다.</span>
+          <span
+            class="md-helper-text error"
+            v-else-if="!isConfirmDuplicate && isDuplicate"
+          >사용 중인 이메일입니다.</span>
+          <span
+            class="md-helper-text error"
+            v-else-if="isValidEmail && !isConfirmDuplicate"
+          >이메일 중복확인을 해주세요.</span>
+          <span class="md-helper-text error" v-else-if="!isValidEmail">이메일형식이 아닙니다.</span>
+        </md-field>
+        <md-progress-spinner
+          class="spinner"
+          :md-diameter="30"
+          :md-stroke="3"
+          :class="{loading: !isLoading}"
+          md-mode="indeterminate"
+        ></md-progress-spinner>
+        <!-- <pulse-loader :loading="isLoading" class="md-raised"></pulse-loader> -->
+        <md-button class="md-raised" @click="duplicateCheck" :class="{loading: isLoading}">중복확인</md-button>
+      </div>
+
+      <md-field>
+        <label>Password</label>
+        <md-input v-model="password" type="password"></md-input>
+        <span class="md-helper-text" v-if="isValidPassword">사용가능한 비밀번호입니다.</span>
+        <span class="md-helper-text error" v-else>비밀번호는 8자 이상, 특수문자, 영문, 숫자를 포함해야합니다.</span>
+      </md-field>
+      <div>
+        <md-progress-spinner
+          class="spinner"
+          :md-diameter="30"
+          :md-stroke="3"
+          :class="{loading: !isSignUpLoading}"
+          md-mode="indeterminate"
+        ></md-progress-spinner>
+        <md-button
+          :class="{loading: isSignUpLoading}"
+          class="md-raised sign-up-btn"
+          @click="signUp"
+        >회원가입</md-button>
+      </div>
     </form>
-  </div>
+  </md-card>
 </template>
 
 <script>
@@ -28,7 +76,8 @@ export default {
       isValidEmail: false,
       isValidPassword: false,
       isValidName: false,
-      isLoading: false
+      isLoading: false,
+      isSignUpLoading: false
     };
   },
   methods: {
@@ -39,21 +88,30 @@ export default {
         this.isValidPassword &&
         this.isValidName
       ) {
+        this.isSignUpLoading = true;
+        console.log(this.email + this.password + this.displayName);
+
         this.$auth
           .createUserWithEmailAndPassword(this.email, this.password)
           // .createUserWithEmailAndPassword("test@test.com", "123456")
-          .then(user => {
+          .then(result => {
             this.$db
               .collection(this.$rootCol)
-              .doc(user.uid)
+              .doc(result.user.uid)
               .set({
                 displayName: this.displayName,
                 email: this.email,
                 isAdmin: false
               })
               .then(() => {
-                this.$auth.signOut();
-                this.$router.replace("/sign-in");
+                result.user
+                  .updateProfile({
+                    displayName: this.displayName
+                  })
+                  .then(() => {
+                    this.isSignUpLoading = false;
+                    this.$router.replace("/dashboard");
+                  });
               })
               .catch(err => {
                 console.log(err.message);
@@ -83,14 +141,12 @@ export default {
           console.log("this.isDuplicate : " + this.isDuplicate);
           if (!this.isDuplicate) {
             this.isConfirmDuplicate = true;
-            alert("사용 가능한 이메일입니다.");
+            // alert("사용 가능한 이메일입니다.");
           } else {
             this.isConfirmDuplicate = false;
-            alert("이미 가입된 이메일입니다.");
+            // alert("이미 가입된 이메일입니다.");
           }
           this.isLoading = false;
-                    console.log(this.isLoading);
-
         });
     }
   },
@@ -99,6 +155,8 @@ export default {
       var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
       console.log(re.test(email));
       this.isValidEmail = re.test(email);
+      this.isConfirmDuplicate = false;
+      this.isDuplicate = false;
     },
     password: function(password) {
       var re = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/;
@@ -114,8 +172,37 @@ export default {
 </script>
 
 <style scoped>
-.loading {
-    display: none
+
+.spinner {
+  /* stroke: blue; */
+  margin-left: 16px;
 }
 
+.sign-up-container {
+  width: 33%;
+  margin-top: 10%;
+  margin-left: auto;
+  margin-right: auto;
+  padding: 16px;
+}
+
+.sign-up-container form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.sign-up-container form div {
+  flex: 1;
+}
+
+.sign-up-input-container {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.sign-up-btn {
+  width: 100%;
+}
 </style>

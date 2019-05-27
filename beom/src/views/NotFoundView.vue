@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div class="not-found-container">
         <h1>404 Not Found</h1>
     </div>
 </template>
@@ -10,6 +10,9 @@ export default {
 }
 </script>
 
-<style>
-
+<style scoped>
+.not-found-container {
+    display: flex;
+    justify-content: center;
+}
 </style>

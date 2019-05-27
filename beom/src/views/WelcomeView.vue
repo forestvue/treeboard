@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div class="welcom-container">
         <h1>Welcome!</h1>
     </div>
 </template>
@@ -10,6 +10,9 @@ export default {
 }
 </script>
 
-<style>
-
+<style scoped>
+.welcom-container {
+    display: flex;
+    justify-content: center;
+}
 </style>
