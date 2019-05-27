@@ -6,14 +6,8 @@ export const ApiService = {
   logout () {
 
   },
-  register (email, password) {
-    auth.createUserWithEmailAndPassword(email, password)
-      .then((res) => {
-        console.log(res)
-      })
-      .catch(function (error) {
-        console.log(error)
-      })
+  register (data) {
+    return auth.createUserWithEmailAndPassword(data.id, data.pw)
   },
   getUserAll () {
 

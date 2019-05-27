@@ -9,12 +9,14 @@
         {{message}}
       </div>
     </form>
-    <button v-on:click="check">register</button>
+    <button v-on:click="register">register</button>
   </div>
 </template>
 
 <script>
 // import { ApiService } from '../../common/api.service'
+
+import { ApiService } from '../../common/api.service'
 
 export default {
   name: 'RegisterModal',
@@ -31,12 +33,13 @@ export default {
     },
     register: function () {
       this.check(this.id, this.pw)
-        .then(console.log('success'))
+        .then(ApiService.register)
+        .then(this.closeModal)
         .catch(this.errorHandler)
     },
     check: function (id, pw) {
       let email = /[^@]+@[^.]+\..+/
-      let password = /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$/
+      let password = /^(?=.*?[a-zA-Z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$/
       return new Promise((resolve, reject) => {
         if (!email.test(id)) {
           reject(new Error('email'))
@@ -47,12 +50,23 @@ export default {
         resolve({id, pw})
       })
     },
-    errorHandler: function (msg) {
-      switch (msg) {
+    errorHandler: function (error) {
+      switch (error.message) {
         case 'email':
           this.message = '이메일이 형식에 맞지 않습니다.'
           break
         case 'password':
+          this.message = '비밀번호가 형식에 맞지 않습니다.'
+          break
+      }
+      switch (error.code) {
+        case 'auth/email-already-in-use':
+          this.message = '이미 등록된 계정입니다.'
+          break
+        case 'auth/invalid-email':
+          this.message = '이메일이 형식에 맞지 않습니다.'
+          break
+        case 'auth/weak-password':
           this.message = '비밀번호가 형식에 맞지 않습니다.'
           break
       }
