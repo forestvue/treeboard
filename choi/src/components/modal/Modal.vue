@@ -12,12 +12,6 @@ export default {
   name: 'Modal',
   components: { RegisterModal, LoginModal },
   props: ['modalInfo'],
-  data () {
-    return {
-      id: '',
-      pw: ''
-    }
-  },
   methods: {
     closeModal: function () {
       this.$eventHub.$emit('closeModal')
