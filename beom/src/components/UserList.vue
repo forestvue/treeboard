@@ -43,6 +43,7 @@
         slot-scope="{ item }"
         md-selectable="multiple"
         md-auto-select
+        :md-disabled="item.email.includes($auth.currentUser.email)"
       >
         <md-table-cell md-label="Name" md-sort-by="name">{{ item.displayName }}</md-table-cell>
         <md-table-cell md-label="Email" md-sort-by="email">{{ item.email }}</md-table-cell>
@@ -65,23 +66,6 @@ export default {
     };
   },
   created() {
-    // this.$db
-    //   .collection("Users")
-    //   .where("isAdmin", "==", false)
-    //   .get()
-    //   .then(querySnapshot => {
-    //     querySnapshot.forEach(doc => {
-    //       console.log(`${doc.id} => ${doc.data()}`);
-    //       console.log(doc.data());
-    //       const userData = {
-    //         uid: doc.id,
-    //         displayName: doc.data().displayName,
-    //         email: doc.data().email,
-    //         isAdmin: doc.data().isAdmin
-    //       };
-    //       this.userList.push(userData);
-    //     });
-    //   });
     this.$db
       .collection("Users")
     //   .where("isAdmin", "==", false)

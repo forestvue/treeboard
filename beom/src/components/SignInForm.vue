@@ -79,12 +79,6 @@ export default {
   padding: 16px;
 }
 
-button,
-input {
-  margin-bottom: 16px;
-  padding: 8px;
-}
-
 .sign-in-container a {
     text-align: center;
 }
