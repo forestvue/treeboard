@@ -2,9 +2,11 @@
   <div id="app">
     <Nav v-bind:auth-info="authInfo"></Nav>
     <div class="main">
-      <router-view></router-view>
+      <router-view v-bind:auth-info="authInfo"></router-view>
     </div>
-    <Modal v-bind:modal-info="modalInfo"></Modal>
+    <Modal v-bind:modal-info="modalInfo"
+           v-bind:auth-info="authInfo"
+    ></Modal>
   </div>
 </template>
 
@@ -19,7 +21,9 @@ export default {
   data () {
     return {
       authInfo: {
-        email: ''
+        email: '',
+        uid: '',
+        role: ''
       },
       modalInfo: {
         modalStatus: false,
@@ -38,14 +42,30 @@ export default {
   },
   methods: {
     login: function () {
-      ApiService.getUser()
+      ApiService.getCurrentUser()
         .then(user => {
           this.authInfo.email = user.email ? user.email : ''
+          this.authInfo.uid = user.uid ? user.uid : ''
+          this.findUser(this.authInfo.uid)
+        })
+    },
+    findUser: function (uid) {
+      if (uid === '') return
+      ApiService.findUser(uid)
+        .then((res) => {
+          if (res.exists) {
+            console.log(res.data())
+            this.authInfo.role = res.data().role
+          } else {
+            ApiService.createUser(this.authInfo).then(() => {}).catch((err) => console.log(err))
+          }
         })
     },
     logout: function () {
       ApiService.logout()
       this.authInfo.email = ''
+      this.authInfo.uid = ''
+      this.authInfo.role = ''
     },
     closeModal: function () {
       this.modalInfo.modalStatus = false

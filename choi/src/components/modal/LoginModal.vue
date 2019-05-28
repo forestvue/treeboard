@@ -25,6 +25,7 @@ import { ApiService } from '../../common/api.service'
 
 export default {
   name: 'LoginModal',
+  props: ['authInfo'],
   data () {
     return {
       id: '',

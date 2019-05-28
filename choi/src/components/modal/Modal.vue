@@ -1,6 +1,6 @@
 <template>
   <div v-show="modalInfo.modalStatus" id="myModal" class="modal">
-    <LoginModal v-show="modalInfo.currentModal===0"></LoginModal>
+    <LoginModal v-bind:auth-info="authInfo" v-show="modalInfo.currentModal===0"></LoginModal>
     <RegisterModal v-show="modalInfo.currentModal===1"></RegisterModal>
   </div>
 </template>
@@ -11,13 +11,12 @@ import RegisterModal from './RegisterModal'
 export default {
   name: 'Modal',
   components: { RegisterModal, LoginModal },
-  props: ['modalInfo'],
+  props: ['modalInfo', 'authInfo'],
   methods: {
     closeModal: function () {
       this.$eventHub.$emit('closeModal')
     },
     goRegister: function () {
-      console.log('register')
     }
   }
 }
