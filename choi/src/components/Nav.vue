@@ -2,7 +2,8 @@
   <div class="nav">
     <ul>
       <li><router-link to="/">home</router-link></li>
-      <li class="login"><a v-on:click="doLogin">login</a></li>
+      <li v-if="authInfo.email !== ''" class="logon">{{authInfo.email}} <button v-on:click="doLogout">logout</button></li>
+      <li v-else class="login"><a v-on:click="doLogin">login</a></li>
     </ul>
   </div>
 </template>
@@ -10,9 +11,13 @@
 <script>
 export default {
   name: 'Nav',
+  props: ['authInfo'],
   methods: {
     doLogin: function () {
       this.$eventHub.$emit('openModal', 0)
+    },
+    doLogout: function () {
+      this.$eventHub.$emit('logout')
     }
   }
 }
@@ -40,6 +45,10 @@ export default {
 }
 
 .nav ul li.login{
+  float: right;
+  cursor: pointer;
+}
+.nav ul li.logon{
   float: right;
   cursor: pointer;
 }

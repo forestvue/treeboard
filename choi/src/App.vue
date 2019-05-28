@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <Nav></Nav>
+    <Nav v-bind:auth-info="authInfo"></Nav>
     <div class="main">
       <router-view></router-view>
     </div>
@@ -18,9 +18,8 @@ export default {
   components: { Modal, Nav },
   data () {
     return {
-      Authinfo: {
-        id: '',
-        pw: ''
+      authInfo: {
+        email: ''
       },
       modalInfo: {
         modalStatus: false,
@@ -28,19 +27,25 @@ export default {
       }
     }
   },
+  created () {
+    this.login()
+  },
   mounted () {
+    this.$eventHub.$on('logged', this.login)
     this.$eventHub.$on('openModal', this.openModal)
     this.$eventHub.$on('closeModal', this.closeModal)
+    this.$eventHub.$on('logout', this.logout)
   },
   methods: {
-    goRegister: function () {
-
+    login: function () {
+      ApiService.getUser()
+        .then(user => {
+          this.authInfo.email = user.email ? user.email : ''
+        })
     },
-    goLogin: function () {
-      this.openModal()
-    },
-    signin: function () {
-      ApiService.login()
+    logout: function () {
+      ApiService.logout()
+      this.authInfo.email = ''
     },
     closeModal: function () {
       this.modalInfo.modalStatus = false
