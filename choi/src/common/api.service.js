@@ -32,5 +32,10 @@ export const ApiService = {
       email: data.email,
       role: 'guest'
     })
+  },
+  updateUser (uid, role) {
+    return db.collection('choi_user').doc(uid).update({
+      role: role
+    })
   }
 }
