@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div class="dashboard">
         <h3>Dashboard</h3>
         <router-view/>
     </div>
@@ -11,5 +11,5 @@
 </script>
 
 <style>
-
+    
 </style>
