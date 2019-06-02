@@ -34,13 +34,13 @@ export default {
 </script>
 
 <style>
+
     .navbar{
         padding: 20px;
         height: 35px;
         line-height: 35px;
         font-size: 17px;
         background-color:#24c9c0;
-        margin-bottom: 50px;
         
     }
     .navbar-logo{

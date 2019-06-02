@@ -113,17 +113,20 @@ export default {
                 console.log(error);
             })
 
-            usersCollection.where("isAdmin","==",true).get()
-            .then(querySnapshot => {
-                this.adminNum=querySnapshot.size;
-                
-            })
+            this.adminNum=this.adminCount();
+            this.userNum=this.userCount();
 
-            usersCollection.where("isAdmin","==",false).get()
-            .then(querySnapshot => {
-                this.userNum=querySnapshot.size;
+            // usersCollection.where("isAdmin","==",true).get()
+            // .then(querySnapshot => {
+            //     this.adminNum=querySnapshot.size;
                 
-            })
+            // })
+
+            // usersCollection.where("isAdmin","==",false).get()
+            // .then(querySnapshot => {
+            //     this.userNum=querySnapshot.size;
+                
+            // })
             
 
             
@@ -152,23 +155,14 @@ export default {
             .catch((error) => {
                 console.log(error);
             })
+
+            this.adminNum=this.adminCount();
+            this.userNum=this.userCount();
             
-            usersCollection.where("isAdmin","==",true).get()
-            .then(querySnapshot => {
-                this.adminNum=querySnapshot.size;
-                
-            })
-            
-            usersCollection.where("isAdmin","==",false).get()
-            .then(querySnapshot => {
-                this.userNum=querySnapshot.size;
-                
-            })
-            
-            console.log(this.userNum);
         
         }
     },
+    //piechart 에 바뀌는 데이터에 따라 보여주려면 computed!
     computed: {
         pieData(){
             return{
@@ -178,7 +172,7 @@ export default {
                     label: "Data",
                     backgroundColor: ["#41B883", "#00D8FF"],
                     data: [
-                            //이거 어떻게 하지..?
+                        //이거 어떻게 하지..? -> 했다,,,
                         this.adminNum,this.userNum
                             
                     ]

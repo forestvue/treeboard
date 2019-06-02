@@ -4,11 +4,14 @@
       <navbar></navbar>
     </header>
     
+    <body class="app-body">
+      <router-view/>
+    </body>
     <footer class="app-footer">
 
     </footer>
-    <router-view/>
     
+
   </div>
 </template>
 
@@ -60,6 +63,16 @@ button{
   padding: 10px;
   cursor: pointer;
   font-size: 16px;
+}
+
+.app-header{
+  position: fixed;
+  width: 100%;
+  top: 0;
+}
+
+.app-body{
+  margin-top: 125px;
 }
 
 </style>
