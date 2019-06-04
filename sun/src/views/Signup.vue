@@ -1,6 +1,6 @@
 <template>
     <div class="signup">
-        <h3>Sign Up</h3>
+        <h2>Sign Up</h2>
         <input v-validate="'required:true'" 
         v-model="email" type="email" name="email" placeholder="Email"><br>
 

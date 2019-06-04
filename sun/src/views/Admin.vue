@@ -1,10 +1,21 @@
 <template>
     <div class="admin" v-if="this.$router.user.isAdmin===true">
-        
+        <spinner></spinner>
+        <p>Page for admins</p><br>
+        <p>All Users</p>
+        <div class="totalList">
+            <ul>
+                <li v-for="(user, index) in users" v-bind:key="user.uid">
+                    {{index+1}} : {{user.displayName}}
+                </li>
+            </ul>
+        </div>
+
         <div class="List">
+            
             <div class="userList">
             <ul>
-                <h4>User List</h4>
+                <h3>User List</h3>
                 <p>Total: {{this.userNum}} users</p>
                 <li v-for="user in users" v-bind:key="user.uid" v-if="user.isAdmin===false">
                     {{user.displayName}}
@@ -15,7 +26,7 @@
 
             <div class="adminList">
             <ul>
-                <h4>Admin List</h4>
+                <h3>Admin List</h3>
                 <p>Total: {{this.adminNum}} admins</p>
                 <li v-for="user in users" v-bind:key="user.uid" v-if="user.isAdmin===true">
                     {{user.displayName}}
@@ -35,6 +46,7 @@
 <script>
 import {usersCollection} from "../firebase.js";
 import PieChart from "../components/chart.js";
+import Spinner from "./Spinner.vue";
 
 export default {
     name: "admin",
@@ -51,7 +63,9 @@ export default {
         }
     },
     components: {
+        Spinner,
         PieChart
+        
     },
     
     created() {
@@ -199,6 +213,18 @@ export default {
         float: left;
     }
 
+    .totalList{
+        display: inline-block;
+        width: 50%;
+        margin-bottom: 50px;
+    }
+
+    .totalList ul{
+        text-align: left;
+        padding-left: 250px;
+    }
+
+    
     .userList{
         width: 50%;
         height: 500px;

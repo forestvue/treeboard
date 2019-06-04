@@ -1,11 +1,17 @@
 <template>
     <div class="login">
-        <h3>Log in</h3>
+        <div class="vld-parent">
+            <loading :active.sync="isLoading"
+            :can-cancel="false"
+            :is-full-page="fullPage"></loading>
+        </div>
+
+        <h2>Log in</h2>
         <input v-model="email" type="text" placeholder="Email"><br>
         <input v-model="password" type="password" placeholder="Password"><br>
-        <button @click="login">Log in</button>
+        <button @click="login" @click.prevent="doAjax">Log in</button>
         <p>or Sign in with Google<br>
-            <button @click="googleLogin" class="googleLogin-button">
+            <button @click="googleLogin" class="googleLogin-button" @click.prevent="doAjax">
                 <img src="../assets/google_logo.png" alt="Google logo" width="30px" height="30px">
             </button>
 
@@ -17,16 +23,33 @@
 <script>
 import firebase from "firebase"
 import { usersCollection } from '../firebase';
+//Spinner로 모듈화했을 때 methods를 따로 가져오는 방법은 없을까..? 
+import Loading from 'vue-loading-overlay';
+import 'vue-loading-overlay/dist/vue-loading.css';
 
 export default {
     name: "login",
     data() {
         return {
             email: "",
-            password: ""
+            password: "",
+            isLoading: false,
+            fullPage: true
         }
     },
+    components: {
+        Loading
+    },
     methods: {
+
+        doAjax() {
+            this.isLoading = true;
+            // simulate AJAX
+            setTimeout(() => {
+                this.isLoading = false
+            },5000)
+        },
+        
         login(){
             firebase.auth().signInWithEmailAndPassword(this.email, this.password).then((user)=> {
                 this.$router.user=user.user;
@@ -44,6 +67,7 @@ export default {
                 .catch((error) => {
                     console.log(error);
                 })
+                
                 
                 this.$router.replace("/");
             }).catch((error) => {

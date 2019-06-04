@@ -46,7 +46,7 @@ html, body{
 a {
   text-decoration: none;
 }
-ul {
+ul, li {
   list-style: none;
 }
 
@@ -63,6 +63,9 @@ button{
   padding: 10px;
   cursor: pointer;
   font-size: 16px;
+  border: solid 1px transparent;
+  border-radius: 4px;
+  background-color: #e8ecf1;
 }
 
 .app-header{
