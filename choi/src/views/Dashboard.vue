@@ -1,23 +1,43 @@
 <template>
   <div>
-    <table v-if="authInfo.role==='admin'" class="customers">
-      <tr>
-        <th>Email</th>
-        <th>Role</th>
-        <th>Promote / Relegate</th>
-      </tr>
-      <tr v-bind:key="user.id" v-for="user in userList">
-        <td>{{user.email}}</td>
-        <td>{{user.role}}</td>
-        <td><div class="dropdown">
-          <button class="dropbtn">Action</button>
-          <div class="dropdown-content">
-            <a v-on:click="update(user.id, 'admin')">Admin</a>
-            <a v-on:click="update(user.id, 'guest')">Guest</a>
-          </div>
-        </div></td>
-      </tr>
-    </table>
+    <div v-if="authInfo.role==='admin'">
+      <h1>Admins</h1>
+      <table  class="customers">
+        <tr>
+          <th>Email</th>
+          <th>Role</th>
+          <th>Promote / Relegate</th>
+        </tr>
+        <tr v-bind:key="user.id" v-for="user in adminList">
+          <td>{{user.email}}</td>
+          <td>{{user.role}}</td>
+          <td><div class="dropdown">
+            <button class="dropbtn">Action</button>
+            <div class="dropdown-content">
+              <a v-on:click="update(user.id, 'guest')">Guest</a>
+            </div>
+          </div></td>
+        </tr>
+      </table>
+      <h1>Guests</h1>
+      <table  class="customers">
+        <tr>
+          <th>Email</th>
+          <th>Role</th>
+          <th>Promote / Relegate</th>
+        </tr>
+        <tr v-bind:key="user.id" v-for="user in guestList">
+          <td>{{user.email}}</td>
+          <td>{{user.role}}</td>
+          <td><div class="dropdown">
+            <button class="dropbtn">Action</button>
+            <div class="dropdown-content">
+              <a v-on:click="update(user.id, 'admin')">Admin</a>
+            </div>
+          </div></td>
+        </tr>
+      </table>
+    </div>
     <div v-else-if="authInfo.role==='guest'">
       <h1>Welcome guest!</h1>
     </div>
@@ -29,6 +49,7 @@
 
 <script>
 import { ApiService } from '../common/api.service'
+import { globalLock } from '../store'
 
 export default {
   name: 'User',
@@ -38,28 +59,55 @@ export default {
   },
   data () {
     return {
-      userList: []
+      localLock: globalLock.lock,
+      adminList: [],
+      guestList: []
     }
   },
   methods: {
     getAllUsers: function () {
       if (this.authInfo.role === 'admin') {
-        ApiService.getUserList().then(res => {
-          res.forEach((userdoc) => {
-            let info = userdoc.data()
-            this.userList.push({
-              id: userdoc.id,
-              email: info.email,
-              role: info.role
-            })
-          })
-        })
+        ApiService.getAdmins().then(this.renderAdmin)
+        ApiService.getGuests().then(this.renderGuest)
+        ApiService.watchAdmins(this.renderAdmin)
+        ApiService.watchGuests(this.renderGuest)
       }
       this.$eventHub.$emit('loadingFinished')
     },
     update: function (id, role) {
-      console.log(id)
-      ApiService.updateUser(id, role).then(res => console.log('success'))
+      if (globalLock.lock) {
+        this.$toast('업데이트 중이니 잠시만 기다려주십시오.', {
+          timeout: 3000,
+          icon: 'info'
+        })
+        return
+      }
+      globalLock.lock = true
+      window.setTimeout(() => {
+        ApiService.updateUser(id, role).then(res => { globalLock.lock = false })
+      }, 3000)
+    },
+    renderAdmin: function (res) {
+      this.adminList = []
+      res.forEach((userdoc) => {
+        let info = userdoc.data()
+        this.adminList.push({
+          id: userdoc.id,
+          email: info.email,
+          role: info.role
+        })
+      })
+    },
+    renderGuest: function (res) {
+      this.guestList = []
+      res.forEach((userdoc) => {
+        let info = userdoc.data()
+        this.guestList.push({
+          id: userdoc.id,
+          email: info.email,
+          role: info.role
+        })
+      })
     }
   },
   watch: {

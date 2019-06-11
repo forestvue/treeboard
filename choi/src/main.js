@@ -3,11 +3,17 @@
 import Vue from 'vue'
 import App from './App'
 import router from './router'
+import './toasts'
 
 Vue.config.productionTip = false
 /* eslint-disable no-new */
 Vue.prototype.$eventHub = new Vue()
-
+let lock = false
+Vue.mixin({
+  data () {
+    return { lock }
+  }
+})
 new Vue({
   el: '#app',
   router,

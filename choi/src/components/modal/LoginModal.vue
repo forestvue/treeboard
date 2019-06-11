@@ -8,44 +8,56 @@
         <input type="password" placeholder="Password" autocomplete="off" v-model="pw">
       </form>
       <div>
-        <button v-on:click="login" class="sky login-button">Login</button>
+        <button v-bind:disabled="gLock" v-on:click="login" class="sky login-button">Login</button>
       </div>
     </div>
     <div class="error-msg">
       {{message}}
     </div>
-    <button v-on:click="googleLogin">구글로 로그인하기</button>
+    <button v-bind:disabled="gLock" class="google" v-on:click="googleLogin">구글로 로그인하기</button>
     <p>또는</p>
-    <button v-on:click="doRegister">회원가입 하기</button>
+    <button v-bind:disabled="gLock" class="register" v-on:click="doRegister">회원가입 하기</button>
   </div>
 </template>
 
 <script>
 import { ApiService } from '../../common/api.service'
+import { globalLock } from '../../store'
 
 export default {
   name: 'LoginModal',
   props: ['authInfo'],
   data () {
     return {
+      localLock: globalLock.lock,
       id: '',
       pw: '',
       message: ''
     }
   },
+  computed: {
+    gLock: function () {
+      return globalLock.lock
+    }
+  },
   methods: {
     googleLogin: function () {
+      if (globalLock.lock) return
+      globalLock.lock = true
       ApiService.googleLogin().then((res) => {
-        this.notify()
+        this.notifyLogged()
         this.closeModal()
       }).catch(this.errorHandler)
     },
     login: function () {
+      if (globalLock.lock) return
+      globalLock.lock = true
       this.check(this.id, this.pw)
         .then(ApiService.login)
         .then((res) => {
-          this.notify()
+          this.notifyLogged()
           this.closeModal()
+          globalLock.lock = false
         })
         .catch(this.errorHandler)
     },
@@ -63,39 +75,41 @@ export default {
       })
     },
     errorHandler: function (error) {
+      globalLock.lock = false
       switch (error.message) {
         case 'input/email':
           this.message = '이메일이 형식에 맞지 않습니다.'
-          break
+          return
         case 'input/password':
           this.message = '비밀번호가 형식에 맞지 않습니다.'
-          break
+          return
       }
       switch (error.code) {
         case 'auth/invalid-email':
           this.message = '해당 이메일이 존재하지 않습니다.'
-          break
+          return
         case 'auth/user-disabled':
           this.message = '사용자가 비활성화 되었습니다.'
-          break
+          return
         case 'auth/user-not-found':
           this.message = '이메일로 가입된 계정이 존재하지 않습니다'
-          break
+          return
         case 'auth/wrong-password':
           this.message = '비밀번호가 유효하지 않습니다.'
-          break
+          return
         default :
-          this.message = error.code
-          break
+          this.message = '' + error.code
       }
     },
     doRegister: function () {
       this.$eventHub.$emit('openModal', 1)
     },
     closeModal: function () {
+      if (globalLock.lock) return
+      this.message = ''
       this.$eventHub.$emit('closeModal')
     },
-    notify: function () {
+    notifyLogged: function () {
       this.$eventHub.$emit('logged')
     }
   }
@@ -113,5 +127,17 @@ export default {
   .error-msg{
     background-color: #fff1ff;
     color: #ff0000;
+  }
+  .google{
+    background-color: #4CAF50;
+  }
+  .google:disabled{
+    background-color: #aaaaaa;
+  }
+  .register{
+    background-color: #a52a2a;
+  }
+  .register:disabled{
+    background-color: #aaaaaa;
   }
 </style>

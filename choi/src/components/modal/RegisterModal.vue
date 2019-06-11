@@ -1,6 +1,6 @@
 <template>
   <div class="modal-content">
-    <span class="close" v-on:click="closeModal">&times;</span>
+    <span class="close"  v-on:click="closeModal">&times;</span>
     <h2> 회원가입하기</h2>
     <form class="register-form">
       <input type="email" autocomplete="on" v-model="id">
@@ -9,13 +9,14 @@
         {{message}}
       </div>
     </form>
-    <button v-on:click="register">register</button>
+    <button class="btn-register" :disabled="gLock" v-on:click="register">register</button>
   </div>
 </template>
 
 <script>
 
 import { ApiService } from '../../common/api.service'
+import { globalLock } from '../../store'
 
 export default {
   name: 'RegisterModal',
@@ -26,14 +27,24 @@ export default {
       message: ''
     }
   },
+  computed: {
+    gLock: function () {
+      return globalLock.lock
+    }
+  },
   methods: {
+    notifyLogged: function () {
+      this.$eventHub.$emit('logged')
+    },
     closeModal: function () {
+      if (globalLock.lock) return
       this.$eventHub.$emit('closeModal')
     },
     register: function () {
+      globalLock.lock = true
       this.check(this.id, this.pw)
         .then(ApiService.register)
-        .then(this.closeModal)
+        .then(this.notifyLogged)
         .catch(this.errorHandler)
     },
     check: function (id, pw) {
@@ -50,6 +61,7 @@ export default {
       })
     },
     errorHandler: function (error) {
+      globalLock.lock = false
       switch (error.message) {
         case 'email':
           this.message = '이메일이 형식에 맞지 않습니다.'
@@ -80,6 +92,13 @@ export default {
   .register-form input{
     display: block;
     margin: auto;
+  }
+  .btn-register{
+    padding: 10px 20px;
+    background-color: #00bc00;
+  }
+  .btn-register:disabled{
+    background-color: #aaaaaa;
   }
   .error-msg{
     background-color: #fff1ff;

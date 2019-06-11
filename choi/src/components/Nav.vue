@@ -2,16 +2,29 @@
   <div id="navBar" v-bind:class="{floated: floatNav}" class="nav">
     <ul>
       <li><router-link to="/">home</router-link></li>
-      <li v-if="authInfo.email !== ''" class="logon">{{authInfo.email}} <button v-on:click="doLogout">logout</button></li>
+      <li v-if="auth.email!==''" class="logon">{{auth.email}} <button v-bind:disabled="gLock" v-on:click="doLogout">logout</button></li>
       <li v-else class="login"><a v-on:click="doLogin">login</a></li>
     </ul>
   </div>
 </template>
 
 <script>
+import { globalLock } from '../store'
+
 export default {
   name: 'Nav',
   props: ['authInfo', 'floatNav'],
+  data () {
+    return {
+      auth: this.authInfo,
+      localLock: globalLock.lock
+    }
+  },
+  computed: {
+    gLock: function () {
+      return globalLock.lock
+    }
+  },
   methods: {
     doLogin: function () {
       this.$eventHub.$emit('openModal', 0)
@@ -58,6 +71,12 @@ export default {
 .nav ul li.logon{
   float: right;
   cursor: pointer;
+}
+.nav ul li.logon button{
+  background-color: #ffb573;
+}
+.nav ul li.logon button:disabled{
+  background-color: #bababa;
 }
 .nav ul li a{
   display: block;

@@ -20,11 +20,13 @@
 import Nav from '@/components/Nav'
 import { ApiService } from './common/api.service'
 import Modal from './components/modal/Modal'
+import { globalLock } from './store'
 export default {
   name: 'App',
   components: { Modal, Nav },
   data () {
     return {
+      localLock: globalLock.lock,
       authInfo: {
         email: '',
         uid: '',
@@ -58,27 +60,32 @@ export default {
       this.isLoading = false
     },
     login: function () {
-      ApiService.getCurrentUser()
-        .then(user => {
-          this.authInfo.email = user.email ? user.email : ''
-          this.authInfo.uid = user.uid ? user.uid : ''
-          this.findUser(this.authInfo.uid)
-        })
+      ApiService.getCurrentUser(this.getUserInfo)
     },
-    findUser: function (uid) {
-      if (uid === '') return
-      ApiService.findUser(uid)
-        .then((res) => {
-          if (res.exists) {
-            console.log(res.data())
-            this.authInfo.role = res.data().role
-          } else {
-            ApiService.createUser(this.authInfo).then(() => {}).catch((err) => console.log(err))
-          }
-        })
+    getUserInfo: function (user) {
+      console.log(user)
+      if (!user) return
+      this.findUser(user)
+        .then(this.closeModal)
+        .catch(err => console.log(err))
+    },
+    findUser: function (user) {
+      if (user.uid === '' || user.uid === undefined) return
+      return new Promise(resolve => {
+        ApiService.findUser(user.uid)
+          .then((res) => {
+            this.authInfo.email = user.email ? user.email : ''
+            this.authInfo.uid = user.uid ? user.uid : ''
+            if (res.exists) {
+              this.authInfo.role = res.data().role
+            } else {
+              ApiService.createUser(this.authInfo).then(() => { this.authInfo.role = 'guest' }).catch((err) => console.log(err))
+            }
+            resolve('success')
+          })
+      })
     },
     checkScroll: function () {
-      console.log(this.$refs.navBar)
       if (window.pageYOffset >= 60) {
         this.floatNav = true
       } else {
@@ -86,10 +93,11 @@ export default {
       }
     },
     logout: function () {
-      ApiService.logout()
-      this.authInfo.email = ''
-      this.authInfo.uid = ''
-      this.authInfo.role = ''
+      ApiService.logout().then(res => {
+        this.authInfo.email = ''
+        this.authInfo.uid = ''
+        this.authInfo.role = ''
+      })
     },
     loadingStart: function () {
       this.isLoading = true
@@ -99,6 +107,7 @@ export default {
     },
     closeModal: function () {
       this.modalInfo.modalStatus = false
+      globalLock.lock = false
     },
     openModal: function (id) {
       this.modalInfo.currentModal = id
@@ -174,6 +183,9 @@ export default {
     width: 75px;
     height: 75px;
     margin-bottom: 10px;
+  }
+  .login-button:disabled{
+    background-color: #aaaaaa;
   }
   /* The Modal (background) */
   .modal {

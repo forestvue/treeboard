@@ -12,16 +12,27 @@ export const ApiService = {
   register (data) {
     return auth.createUserWithEmailAndPassword(data.id, data.pw)
   },
-  getCurrentUser () {
-    return new Promise((resolve, reject) => {
-      auth.onAuthStateChanged((user) => {
-        if (user) resolve(auth.currentUser)
-        else resolve('')
-      })
+  getCurrentUser (func) {
+    auth.onAuthStateChanged((user) => {
+      func(user)
     })
   },
   getUserList () {
     return db.collection('choi_user').get()
+  },
+  getGuests () {
+    return db.collection('choi_user').where('role', '==', 'guest').get()
+  },
+  watchGuests (func) {
+    return db.collection('choi_user').where('role', '==', 'guest')
+      .onSnapshot(func)
+  },
+  watchAdmins (func) {
+    return db.collection('choi_user').where('role', '==', 'admin')
+      .onSnapshot(func)
+  },
+  getAdmins () {
+    return db.collection('choi_user').where('role', '==', 'admin').get()
   },
   findUser (uid) {
     return db.collection('choi_user').doc(uid)
