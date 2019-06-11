@@ -34,7 +34,7 @@ export default {
   name: 'User',
   props: ['authInfo'],
   created () {
-    if (this.authInfo.role === 'admin') this.getAllUsers()
+    this.getAllUsers()
   },
   data () {
     return {
@@ -43,16 +43,19 @@ export default {
   },
   methods: {
     getAllUsers: function () {
-      ApiService.getUserList().then(res => {
-        res.forEach((userdoc) => {
-          let info = userdoc.data()
-          this.userList.push({
-            id: userdoc.id,
-            email: info.email,
-            role: info.role
+      if (this.authInfo.role === 'admin') {
+        ApiService.getUserList().then(res => {
+          res.forEach((userdoc) => {
+            let info = userdoc.data()
+            this.userList.push({
+              id: userdoc.id,
+              email: info.email,
+              role: info.role
+            })
           })
         })
-      })
+      }
+      this.$eventHub.$emit('loadingFinished')
     },
     update: function (id, role) {
       console.log(id)

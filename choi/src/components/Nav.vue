@@ -1,5 +1,5 @@
 <template>
-  <div class="nav">
+  <div id="navBar" v-bind:class="{floated: floatNav}" class="nav">
     <ul>
       <li><router-link to="/">home</router-link></li>
       <li v-if="authInfo.email !== ''" class="logon">{{authInfo.email}} <button v-on:click="doLogout">logout</button></li>
@@ -11,7 +11,7 @@
 <script>
 export default {
   name: 'Nav',
-  props: ['authInfo'],
+  props: ['authInfo', 'floatNav'],
   methods: {
     doLogin: function () {
       this.$eventHub.$emit('openModal', 0)
@@ -27,6 +27,13 @@ export default {
 .nav{
   background-color: #a52a2a;
   color: white;
+}
+.floated{
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 3;
 }
 .nav ul{
   list-style: none;

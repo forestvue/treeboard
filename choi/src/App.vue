@@ -1,8 +1,13 @@
 <template>
   <div id="app">
-    <Nav v-bind:auth-info="authInfo"></Nav>
+    <Nav v-bind:auth-info="authInfo"
+         v-bind:float-nav="floatNav"
+    ></Nav>
     <div class="main">
       <router-view v-bind:auth-info="authInfo"></router-view>
+    </div>
+    <div v-show="isLoading" class="loading-screen">
+      <div  class="lds-dual-ring"></div>
     </div>
     <Modal v-bind:modal-info="modalInfo"
            v-bind:auth-info="authInfo"
@@ -28,10 +33,15 @@ export default {
       modalInfo: {
         modalStatus: false,
         currentModal: 0
-      }
+      },
+      isLoading: true,
+      floatNav: false
     }
   },
   created () {
+    window.setTimeout(() => {
+      this.finishLoad()
+    }, 2000)
     this.login()
   },
   mounted () {
@@ -39,8 +49,14 @@ export default {
     this.$eventHub.$on('openModal', this.openModal)
     this.$eventHub.$on('closeModal', this.closeModal)
     this.$eventHub.$on('logout', this.logout)
+    this.$eventHub.$on('loadingStart', this.loadingStart)
+    this.$eventHub.$on('loadingFinished', this.loadingFinished)
+    window.addEventListener('scroll', this.checkScroll)
   },
   methods: {
+    finishLoad: function () {
+      this.isLoading = false
+    },
     login: function () {
       ApiService.getCurrentUser()
         .then(user => {
@@ -61,11 +77,25 @@ export default {
           }
         })
     },
+    checkScroll: function () {
+      console.log(this.$refs.navBar)
+      if (window.pageYOffset >= 60) {
+        this.floatNav = true
+      } else {
+        this.floatNav = false
+      }
+    },
     logout: function () {
       ApiService.logout()
       this.authInfo.email = ''
       this.authInfo.uid = ''
       this.authInfo.role = ''
+    },
+    loadingStart: function () {
+      this.isLoading = true
+    },
+    loadingFinished: function () {
+      this.isLoading = false
     },
     closeModal: function () {
       this.modalInfo.modalStatus = false
@@ -81,6 +111,44 @@ export default {
 <style>
   body {
     margin: 0
+  }
+  .loading-screen{
+    display: block; /* Hidden by default */
+    position: fixed; /* Stay in place */
+    z-index: 3; /* Sit on top */
+    left: 0;
+    top: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    overflow: auto; /* Enable scroll if needed */
+    background-color: #83ff72
+  }
+  @keyframes lds-dual-ring {
+    0% {
+      transform: rotate(0deg);
+    }
+    100% {
+      transform: rotate(360deg);
+    }
+  }
+  .lds-dual-ring {
+    position: fixed;
+    top : 45%;
+    left : 50%;
+    display: inline-block;
+    width: 64px;
+    height: 64px;
+  }
+  .lds-dual-ring:after {
+    content: " ";
+    display: block;
+    width: 46px;
+    height: 46px;
+    margin: auto;
+    border-radius: 50%;
+    border: 5px solid #fff;
+    border-color: #fff transparent #fff transparent;
+    animation: lds-dual-ring 1.2s linear infinite;
   }
   ul{
     margin: 0;
