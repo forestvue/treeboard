@@ -71,29 +71,30 @@ export default {
     };
   },
   created() {
-    this.$db
-      .collection("Users")
-      //   .where("isAdmin", "==", false)
-      .onSnapshot(querySnapshot => {
+    // 변화가 있으면 다시 호출됨
+    this.$db.collection("Users").onSnapshot(querySnapshot => {
+      this.userList = [];
+      querySnapshot.forEach(doc => {
+        this.isDataLoading = false;
 
-        this.userList = [];
-        querySnapshot.forEach(doc => {
-                              this.isDataLoading = false;
-
-          console.log(`${doc.id} => ${doc.data()}`);
-          console.log(doc.data());
-          const userData = {
-            uid: doc.id,
-            displayName: doc.data().displayName,
-            email: doc.data().email,
-            isAdmin: doc.data().isAdmin
-          };
-          this.userList.push(userData);
-        });
-        this.isDataLoading = true;
+        console.log(`${doc.id} => ${doc.data()}`);
+        console.log(doc.data());
+        const userData = {
+          uid: doc.id,
+          displayName: doc.data().displayName,
+          email: doc.data().email,
+          isAdmin: doc.data().isAdmin
+        };
+        this.userList.push(userData);
       });
-    //   this.$db
-    //   .collection("Users").get().then(querySnapshot => {
+      this.isDataLoading = true;
+    });
+
+    // 최초 한번만 호출됨
+    // this.$db
+    //   .collection("Users")
+    //   .get()
+    //   .then(querySnapshot => {
     //     this.userList = [];
     //     querySnapshot.forEach(doc => {
     //       this.isDataLoading = true;
