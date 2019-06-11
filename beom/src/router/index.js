@@ -44,9 +44,9 @@ router.beforeEach((to, from, next) => {
   const currentUser = firebase.auth().currentUser;
   const requiresAuth = to.matched.some(record => record.meta.requiresAuth);
 
-  if(requiresAuth && !currentUser) {
+  if(requiresAuth && !currentUser) { // 인증요구가 필요한 곳에서 로그인 되어있지 않으면, 로그인 화면으로
     next('sign-in');
-  }else if(!requiresAuth && currentUser) {
+  }else if(!requiresAuth && currentUser) { // 로그인 되어 있으면, 대쉬보드로
     next('dashboard');
   }else {
     next();
