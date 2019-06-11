@@ -31,7 +31,7 @@ export default {
         .then(result => {
           console.log(result);
           this.$db
-            .collection("Users")
+            .collection(this.$rootCol)
             .doc(result.user.uid)
             .set({
               displayName: result.user.displayName,

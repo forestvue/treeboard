@@ -72,7 +72,7 @@ export default {
   },
   created() {
     // 변화가 있으면 다시 호출됨
-    this.$db.collection("Users").onSnapshot(querySnapshot => {
+    this.$db.collection(this.$rootCol).onSnapshot(querySnapshot => {
       this.userList = [];
       querySnapshot.forEach(doc => {
         this.isDataLoading = false;

@@ -31,7 +31,6 @@
           :class="{loading: !isLoading}"
           md-mode="indeterminate"
         ></md-progress-spinner>
-        <!-- <pulse-loader :loading="isLoading" class="md-raised"></pulse-loader> -->
         <md-button class="md-raised" @click="duplicateCheck" :class="{loading: isLoading}">중복확인</md-button>
       </div>
 
@@ -60,7 +59,6 @@
 </template>
 
 <script>
-import PulseLoader from "vue-spinner/src/PulseLoader.vue";
 
 export default {
   components: {

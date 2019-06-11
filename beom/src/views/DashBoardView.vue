@@ -32,7 +32,7 @@ export default {
     //   });
 
     this.$db
-      .collection("Users")
+      .collection(this.$rootCol)
       .doc(this.$auth.currentUser.uid)
       .get()
       .then(doc => {
