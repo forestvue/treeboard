@@ -44,24 +44,47 @@
     <div v-else>
       <h1>login required</h1>
     </div>
+    <canvas v-show="authInfo.role==='admin'" ref="canvas" id="pieChart">
+
+    </canvas>
   </div>
 </template>
 
 <script>
 import { ApiService } from '../common/api.service'
 import { globalLock } from '../store'
-
+import Chart from 'chart.js'
 export default {
   name: 'User',
   props: ['authInfo'],
   created () {
     this.getAllUsers()
   },
+  mounted () {
+    window.setTimeout(() => {
+      let pieCtx = this.$refs.canvas.getContext('2d')
+      this.pieChart = new Chart(pieCtx, {
+        type: 'pie',
+        data: this.piedata
+      })
+    }, 3000)
+  },
   data () {
     return {
+      pieChart: null,
       localLock: globalLock.lock,
       adminList: [],
-      guestList: []
+      guestList: [],
+      piedata: {
+        datasets: [{
+          data: [0, 0],
+          backgroundColor: ['red', 'blue']
+        }],
+        labels: [
+          'admin',
+          'guest'
+        ]
+      }
     }
   },
   methods: {
@@ -84,11 +107,20 @@ export default {
       }
       globalLock.lock = true
       window.setTimeout(() => {
-        ApiService.updateUser(id, role).then(res => { globalLock.lock = false })
+        ApiService.updateUser(id, role).then(res => {
+          globalLock.lock = false
+          window.setTimeout(() => {
+            this.pieChart.update()
+          }, 2000)
+        })
       }, 3000)
+    },
+    updateChart: function () {
+      this.pieChart.update()
     },
     renderAdmin: function (res) {
       this.adminList = []
+      this.piedata.datasets[0].data[0] = res.size
       res.forEach((userdoc) => {
         let info = userdoc.data()
         this.adminList.push({
@@ -100,6 +132,7 @@ export default {
     },
     renderGuest: function (res) {
       this.guestList = []
+      this.piedata.datasets[0].data[1] = res.size
       res.forEach((userdoc) => {
         let info = userdoc.data()
         this.guestList.push({
